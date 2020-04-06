@@ -23,19 +23,24 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
-    fig, ax = plt.subplots(figsize=(15, 10))
-    for geoId in df['geoId'].unique()[:5]:
-        if geoId not in {'JPG11668', } and geoId is not None:
+    # fig, ax = plt.subplots(figsize=(15, 10))
+    fig = plt.figure(figsize=(15, 10))
+    ax = fig.add_subplot(111)
+
+    for geoId in df['geoId'].unique():
+        if geoId not in {'CN', 'JPG11668', } and geoId is not None:
             geodf = df[df['geoId'] == geoId][['dateRep', 'cases', 'deaths']]
             if len(geodf) > 10:
                 logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
                 geodf['dateRep'] = pd.to_datetime(geodf['dateRep'])
+                geodf = geodf[geodf['dateRep'] > '2020-03-01']
                 geodf.set_index(['dateRep', 'cases', 'deaths']).unstack(fill_value=0, ).stack().sort_index(
                     level=1, ).reset_index()
                 geodf = geodf.sort_values(by=['dateRep'], axis=0, ascending=True)
                 logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
                 geodf['case_cumsum'] = geodf['cases'].cumsum()
                 geodf['death_cumsum'] = geodf['deaths'].cumsum()
-                geodf.plot(x='dateRep', y='case_cumsum', ax=ax)
+                if geodf['case_cumsum'].max() > 10000:
+                    geodf.plot(x='dateRep', y='case_cumsum', ax=ax, style='.', label=geoId, )
     plt.show()
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
