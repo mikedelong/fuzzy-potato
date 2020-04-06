@@ -2,6 +2,8 @@ from logging import INFO
 from logging import basicConfig
 from logging import getLogger
 from time import time
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 def float_color_to_hex(arg_float, arg_colormap):
@@ -15,4 +17,25 @@ if __name__ == '__main__':
     basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
     logger.info('started.')
 
+    url = 'https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx'
+    logger.info('reading from {}'.format(url))
+    df = pd.read_excel(url, )
+    logger.info('data shape: {}'.format(df.shape))
+    logger.info('data types: {}'.format(df.dtypes))
+
+    fig, ax = plt.subplots(figsize=(15, 10))
+    for geoId in df['geoId'].unique()[:5]:
+        if geoId not in {'JPG11668', } and geoId is not None:
+            geodf = df[df['geoId'] == geoId][['dateRep', 'cases', 'deaths']]
+            if len(geodf) > 10:
+                logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
+                geodf['dateRep'] = pd.to_datetime(geodf['dateRep'])
+                geodf.set_index(['dateRep', 'cases', 'deaths']).unstack(fill_value=0, ).stack().sort_index(
+                    level=1, ).reset_index()
+                geodf = geodf.sort_values(by=['dateRep'], axis=0, ascending=True)
+                logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
+                geodf['case_cumsum'] = geodf['cases'].cumsum()
+                geodf['death_cumsum'] = geodf['deaths'].cumsum()
+                geodf.plot(x='dateRep', y='case_cumsum', ax=ax)
+    plt.show()
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
