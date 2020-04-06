@@ -23,9 +23,7 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
-    # fig, ax = plt.subplots(figsize=(15, 10))
-    fig = plt.figure(figsize=(15, 10))
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(figsize=(15, 10))
 
     for geoId in df['geoId'].unique():
         if geoId not in {'CN', 'JPG11668', } and geoId is not None:
