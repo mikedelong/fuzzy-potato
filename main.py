@@ -4,7 +4,8 @@ from logging import getLogger
 from time import time
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import plotly.express as px
+import plotly.graph_objs as go
 
 def float_color_to_hex(arg_float, arg_colormap):
     color_value = tuple([int(255 * arg_colormap(arg_float)[index]) for index in range(3)])
@@ -23,11 +24,19 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
-    fig, ax = plt.subplots(figsize=(15, 10))
+    plots = ['matplotlib', 'plotly',]
+    plot = plots[1]
+    if plot == plots[0]:
+        fig, ax = plt.subplots(figsize=(15, 10))
+    elif plot == plots[1]:
+        fig = go.Figure()
+        ax = None
 
-    for geoId in df['geoId'].unique():
+    target = 'countriesAndTerritories' # was 'geoId'
+    count = 0
+    for geoId in df[target].unique():
         if geoId not in {'CN', 'JPG11668', } and geoId is not None:
-            geodf = df[df['geoId'] == geoId][['dateRep', 'cases', 'deaths']]
+            geodf = df[df[target] == geoId][['dateRep', 'cases', 'deaths', 'popData2018']]
             if len(geodf) > 10:
                 logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
                 geodf['dateRep'] = pd.to_datetime(geodf['dateRep'])
@@ -37,8 +46,18 @@ if __name__ == '__main__':
                 geodf = geodf.sort_values(by=['dateRep'], axis=0, ascending=True)
                 logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
                 geodf['case_cumsum'] = geodf['cases'].cumsum()
+                geodf['y'] = 10000*geodf['case_cumsum']/geodf['popData2018']
                 geodf['death_cumsum'] = geodf['deaths'].cumsum()
-                if geodf['case_cumsum'].max() > 10000:
-                    geodf.plot(x='dateRep', y='case_cumsum', ax=ax, style='.', label=geoId, )
-    plt.show()
+                if geodf['case_cumsum'].max() > 5000:
+                    if plot == plots[0]:
+                        geodf.plot(x='dateRep', y='y', ax=ax, style='.', label=geoId, )
+                    elif plot == plots[1]:
+                        fig.add_trace(
+                            go.Scatter(x=geodf.dateRep, y=geodf.y, name=geoId.replace('_', ' '),)
+                        )
+
+    if plot == plots[0]:
+        plt.show()
+    elif plot == plots[1]:
+        fig.show()
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
