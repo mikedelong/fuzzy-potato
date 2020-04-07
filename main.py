@@ -41,8 +41,9 @@ if __name__ == '__main__':
     for geoId in df[target].unique():
         if geoId is not None:
             total = df[df[target] == geoId][['cases', ]].sum()
+            population = df[df[target] == geoId]['popData2018'].max()
             if total['cases'] > min_limit:
-                ids.append((geoId, total['cases']))
+                ids.append((geoId, total['cases'] / population))
 
     ids = sorted(ids, key=lambda x: x[1], reverse=True)
     ids = [item[0] for item in ids]
