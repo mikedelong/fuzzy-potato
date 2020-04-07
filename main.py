@@ -45,30 +45,28 @@ if __name__ == '__main__':
                 ids.append((geoId, total['cases']))
 
     ids = sorted(ids, key=lambda x: x[1], reverse=True)
+    ids = [item[0] for item in ids]
     count = 0
     # todo can we sort by size instead of alphabetically by name?
-    for geoId in df[target].unique():
-        # todo get exclusion list in line with target/targets
-        if geoId not in {'CN', 'JPG11668', } and geoId is not None:
-            geodf = df[df[target] == geoId][['dateRep', 'cases', 'deaths', 'popData2018']]
-            if len(geodf) > 10:
-                logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
-                geodf['dateRep'] = pd.to_datetime(geodf['dateRep'])
-                geodf = geodf[geodf['dateRep'] > '2020-03-01']
-                geodf.set_index(['dateRep', 'cases', 'deaths']).unstack(fill_value=0, ).stack().sort_index(
-                    level=1, ).reset_index()
-                geodf = geodf.sort_values(by=['dateRep'], axis=0, ascending=True)
-                logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
-                geodf['case_cumsum'] = geodf['cases'].cumsum()
-                geodf['y'] = 10000 * geodf['case_cumsum'] / geodf['popData2018']
-                geodf['death_cumsum'] = geodf['deaths'].cumsum()
-                if geodf['case_cumsum'].max() > min_limit:
-                    if plot == plots[0]:
-                        geodf.plot(x='dateRep', y='y', ax=ax, style='.', label=geoId, )
-                    elif plot == plots[1]:
-                        fig.add_trace(
-                            go.Scatter(x=geodf.dateRep, y=geodf.y, name=geoId.replace('_', ' '), )
-                        )
+    for geoId in ids:
+        geodf = df[df[target] == geoId][['dateRep', 'cases', 'deaths', 'popData2018']]
+        if len(geodf) > 10:
+            logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
+            geodf['dateRep'] = pd.to_datetime(geodf['dateRep'])
+            geodf = geodf[geodf['dateRep'] > '2020-03-01']
+            geodf.set_index(['dateRep', 'cases', 'deaths']).unstack(fill_value=0, ).stack().sort_index(
+                level=1, ).reset_index()
+            geodf = geodf.sort_values(by=['dateRep'], axis=0, ascending=True)
+            logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
+            geodf['case_cumsum'] = geodf['cases'].cumsum()
+            geodf['y'] = 10000 * geodf['case_cumsum'] / geodf['popData2018']
+            geodf['death_cumsum'] = geodf['deaths'].cumsum()
+            if plot == plots[0]:
+                geodf.plot(x='dateRep', y='y', ax=ax, style='.', label=geoId, )
+            elif plot == plots[1]:
+                fig.add_trace(
+                    go.Scatter(x=geodf.dateRep, y=geodf.y, name=geoId.replace('_', ' '), )
+                )
 
     if plot == plots[0]:
         plt.show()
