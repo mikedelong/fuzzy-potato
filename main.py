@@ -35,12 +35,13 @@ if __name__ == '__main__':
 
     targets = ['countriesAndTerritories', 'geoId']
     target = targets[0]
+    min_limit = 5000
 
     ids = list()
     for geoId in df[target].unique():
         if geoId is not None:
             total = df[df[target] == geoId][['cases', ]].sum()
-            if total['cases'] > 5000:
+            if total['cases'] > min_limit:
                 ids.append((geoId, total['cases']))
 
     ids = sorted(ids, key=lambda x: x[1], reverse=True)
@@ -61,7 +62,7 @@ if __name__ == '__main__':
                 geodf['case_cumsum'] = geodf['cases'].cumsum()
                 geodf['y'] = 10000 * geodf['case_cumsum'] / geodf['popData2018']
                 geodf['death_cumsum'] = geodf['deaths'].cumsum()
-                if geodf['case_cumsum'].max() > 5000:
+                if geodf['case_cumsum'].max() > min_limit:
                     if plot == plots[0]:
                         geodf.plot(x='dateRep', y='y', ax=ax, style='.', label=geoId, )
                     elif plot == plots[1]:
