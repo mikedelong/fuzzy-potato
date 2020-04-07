@@ -35,6 +35,15 @@ if __name__ == '__main__':
 
     targets = ['countriesAndTerritories', 'geoId']
     target = targets[0]
+
+    ids = list()
+    for geoId in df[target].unique():
+        if geoId is not None:
+            total = df[df[target] == geoId][['cases', ]].sum()
+            if total['cases'] > 5000:
+                ids.append((geoId, total['cases']))
+
+    ids = sorted(ids, key=lambda x: x[1], reverse=True)
     count = 0
     # todo can we sort by size instead of alphabetically by name?
     for geoId in df[target].unique():
