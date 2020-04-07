@@ -47,7 +47,6 @@ if __name__ == '__main__':
 
     ids = sorted(ids, key=lambda x: x[1], reverse=True)
     ids = [item[0] for item in ids]
-    count = 0
     # todo can we sort by size instead of alphabetically by name?
     for geoId in ids:
         geodf = df[df[target] == geoId][['dateRep', 'cases', 'deaths', 'popData2018']]
