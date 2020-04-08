@@ -20,14 +20,17 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
-    for window in range(1, 9):
-        positive_df = df[['date', 'positive']].copy(deep=True).sort_values(by='date')
-        positive_df['positive_change'] = positive_df['positive'].pct_change()
-        positive_df['rolling_positive_change'] = positive_df['positive_change'].rolling(window=window,
-                                                                                        min_periods=window, ).mean()
-        row = positive_df.tail(1).squeeze()
-        forecast_format = 'date: {}  {}d rm forecast {:.0f}'
-        logger.info(forecast_format.format((row['date'] + timedelta(days=1, )).date(), window,
-                                           row['positive'] * (1.0 + row['rolling_positive_change'])))
+    for target in ['positive', 'death']:
+        logger.info('forecasting {}'.format(target))
+        target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
+        for window in range(1, 9):
+            target_df['change'] = target_df[target].pct_change()
+            target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
+            row = target_df.tail(1).squeeze()
+            forecast_format = 'date: {}  {}d rm forecast {:.0f} change {:.0f}'
+            forecast_date = (row['date'] + timedelta(days=1, )).date()
+            forecast = row[target] * (1.0 + row['rolling_change'])
+            forecast_change = forecast - row[target]
+            logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
 
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
