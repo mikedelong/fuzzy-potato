@@ -5,6 +5,7 @@ from time import time
 
 import pandas as pd
 from datetime import timedelta
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     time_start = time()
@@ -20,9 +21,16 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
+    count = 0
+    fig, ax = plt.subplots(figsize=(15, 10))
+
     for target in ['positive', 'death']:
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
+        if count == 0:
+            target_df.plot(x='date', y=target, ax=ax, style='.', label=target, )
+            count += 1
+
         for window in range(1, 9):
             target_df['change'] = target_df[target].pct_change()
             target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
@@ -33,4 +41,5 @@ if __name__ == '__main__':
             forecast_change = forecast - row[target]
             logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
 
+    plt.show()
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
