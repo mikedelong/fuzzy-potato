@@ -27,7 +27,7 @@ if __name__ == '__main__':
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         fig, ax = plt.subplots(figsize=(15, 10))
-        ax.scatter(target_df['date'], target_df[target], label=target, c='blue')
+        ax.scatter(target_df['date'], target_df[target], label=target, c='blue', )
 
         for window in range(1, 9):
             target_df['change'] = target_df[target].pct_change()
@@ -38,7 +38,10 @@ if __name__ == '__main__':
             forecast = row[target] * (1.0 + row['rolling_change'])
             forecast_change = forecast - row[target]
             logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
-            ax.scatter([forecast_date], [forecast], c='orange')
+            for project in range(5):
+                ax.scatter([forecast_date], [forecast], c='orange', )
+                forecast_date += timedelta(days=1, )
+                forecast *= (1.0 + row['rolling_change'])
 
         out_file = './' + target + '.png'
         plt.savefig(out_file)
