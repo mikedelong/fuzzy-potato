@@ -6,12 +6,13 @@ from time import time
 import pandas as pd
 from datetime import timedelta
 import matplotlib.pyplot as plt
-
+from pandas.plotting import register_matplotlib_converters
 if __name__ == '__main__':
     time_start = time()
     logger = getLogger(__name__)
     basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
     logger.info('started.')
+    register_matplotlib_converters()
 
     url = 'https://covidtracking.com/api/us/daily.csv'
     logger.info('reading from {}'.format(url))
@@ -28,7 +29,7 @@ if __name__ == '__main__':
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         if count == 0:
-            target_df.plot(x='date', y=target, ax=ax, style='.', label=target, )
+            ax.scatter(target_df['date'], target_df[target], label=target,)
             count += 1
 
         for window in range(1, 9):
@@ -40,6 +41,8 @@ if __name__ == '__main__':
             forecast = row[target] * (1.0 + row['rolling_change'])
             forecast_change = forecast - row[target]
             logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
+            ax.scatter([forecast_date], [forecast], )
 
-    plt.show()
+        out_file = './' + target + '.png'
+        plt.savefig(out_file)
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
