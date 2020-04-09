@@ -20,13 +20,15 @@ if __name__ == '__main__':
     df = pd.read_csv(url)
     date_format = '%Y%m%d'
     df.date = pd.to_datetime(df.date.astype(int), format=date_format, )
-    logger.info('data shape: {}'.format(df.shape))
-    logger.info('data types: {}'.format(df.dtypes))
+    logger.debug('data shape: {}'.format(df.shape))
+    logger.debug('data types: {}'.format(df.dtypes))
 
+    colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
     # todo compute the forecast weight to be a best fit
-    forecast_weight = 0.75
+    forecast_weight = 0.8
     # todo introduce plotly as an alternative to matplotlib
     for target in ['positive', 'death']:
+        once = True
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         target_df['change'] = target_df[target].pct_change()
@@ -44,11 +46,16 @@ if __name__ == '__main__':
                 forecast_change = forecast - row[target]
                 logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
                 for project in range(5):
-                    ax.scatter([forecast_date], [forecast], c='orange', marker='x', )
+                    if once:
+                        ax.scatter([forecast_date], [forecast], c='orange', label='forecast', marker='x', )
+                        once = False
+                    else:
+                        ax.scatter([forecast_date], [forecast],  c=colors[project], marker='x', )
                     forecast_date += timedelta(days=1, )
                     forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
         ax.scatter(target_df['date'], target_df[target], label=target, c='blue', )
+        ax.legend()
         out_file = './' + target + '.png'
         plt.savefig(out_file)
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
