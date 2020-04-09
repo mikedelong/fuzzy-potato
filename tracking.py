@@ -23,11 +23,15 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
+    # todo compute the forecast weight to be a best fit
+    forecast_weight = 0.75
+    # todo introduce plotly as an alternative to matplotlib
     for target in ['positive', 'death']:
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         target_df['change'] = target_df[target].pct_change()
         fig, ax = plt.subplots(figsize=(15, 10))
+        # todo think about plotting y and log y in subplots
         ax.set_yscale('log')
 
         for window in range(1, 9):
@@ -36,13 +40,13 @@ if __name__ == '__main__':
             for index, row in target_df[window:].iterrows():
                 forecast_format = 'date: {}  {}d rm forecast {:.0f} change {:.0f}'
                 forecast_date = (row['date'] + timedelta(days=1, )).date()
-                forecast = row[target] * (1.0 + row['rolling_change'])
+                forecast = row[target] * (1.0 + forecast_weight * row['rolling_change'])
                 forecast_change = forecast - row[target]
                 logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
                 for project in range(5):
                     ax.scatter([forecast_date], [forecast], c='orange', marker='x', )
                     forecast_date += timedelta(days=1, )
-                    forecast *= (1.0 + 0.75*row['rolling_change'])
+                    forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
         ax.scatter(target_df['date'], target_df[target], label=target, c='blue', )
         out_file = './' + target + '.png'
