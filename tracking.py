@@ -1,12 +1,13 @@
+from datetime import timedelta
 from logging import INFO
 from logging import basicConfig
 from logging import getLogger
 from time import time
 
-import pandas as pd
-from datetime import timedelta
 import matplotlib.pyplot as plt
+import pandas as pd
 from pandas.plotting import register_matplotlib_converters
+
 if __name__ == '__main__':
     time_start = time()
     logger = getLogger(__name__)
@@ -22,15 +23,11 @@ if __name__ == '__main__':
     logger.info('data shape: {}'.format(df.shape))
     logger.info('data types: {}'.format(df.dtypes))
 
-    count = 0
-    fig, ax = plt.subplots(figsize=(15, 10))
-
     for target in ['positive', 'death']:
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
-        if count == 0:
-            ax.scatter(target_df['date'], target_df[target], label=target,)
-            count += 1
+        fig, ax = plt.subplots(figsize=(15, 10))
+        ax.scatter(target_df['date'], target_df[target], label=target, )
 
         for window in range(1, 9):
             target_df['change'] = target_df[target].pct_change()
