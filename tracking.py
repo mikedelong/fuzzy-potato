@@ -27,6 +27,7 @@ if __name__ == '__main__':
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         fig, ax = plt.subplots(figsize=(15, 10))
+        ax.set_yscale('log')
         ax.scatter(target_df['date'], target_df[target], label=target, c='blue', )
 
         for window in range(1, 9):
