@@ -38,7 +38,6 @@ if __name__ == '__main__':
 
         for window in range(1, 9):
             target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
-            # row = target_df.tail(1).squeeze()
             for index, row in target_df[window:].iterrows():
                 forecast_format = 'date: {}  {}d rm forecast {:.0f} change {:.0f}'
                 forecast_date = (row['date'] + timedelta(days=1, )).date()
@@ -47,7 +46,7 @@ if __name__ == '__main__':
                 logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
                 for project in range(5):
                     if once:
-                        ax.scatter([forecast_date], [forecast], c='orange', label='forecast', marker='x', )
+                        ax.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
                         once = False
                     else:
                         ax.scatter([forecast_date], [forecast],  c=colors[project], marker='x', )
