@@ -58,7 +58,7 @@ if __name__ == '__main__':
                             ax.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
                         elif plot_method == plot_methods[1]:
                             figure.add_trace(
-                                Scatter(marker=dict(color=['gray']), mode='markers', name='forecast', showlegend=False,
+                                Scatter(marker=dict(color=['gray']), mode='markers', name='forecast', showlegend=True,
                                         x=[forecast_date], y=[forecast], ))
                     else:
                         if plot_method == plot_methods[0]:
