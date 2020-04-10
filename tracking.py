@@ -59,12 +59,15 @@ if __name__ == '__main__':
                         if plot == plots[0]:
                             ax.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
                         elif plot == plots[1]:
-                            fig.add_trace(Scatter(x=[forecast_date], y=[forecast], name='forecast', ))
+                            fig.add_trace(
+                                Scatter(marker=dict(color=['gray']), mode='markers', name='forecast', showlegend=False,
+                                        x=[forecast_date], y=[forecast], ))
                     else:
                         if plot == plots[0]:
                             ax.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
                         elif plot == plots[1]:
-                            fig.add_trace(Scatter(x=[forecast_date], y=[forecast], ))
+                            fig.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
+                                                  x=[forecast_date], y=[forecast], ))
                     forecast_date += timedelta(days=1, )
                     forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
@@ -74,8 +77,7 @@ if __name__ == '__main__':
             out_file = './' + target + '.png'
             plt.savefig(out_file)
         elif plot == plots[1]:
-            fig.add_trace(Scatter(x=target_df['date'], y=target_df[target], name=target,
-                                  # c='blue',
-                                  ))
+            fig.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
+                                  y=target_df[target], ))
             fig.show()
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
