@@ -7,10 +7,9 @@ from time import time
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas.plotting import register_matplotlib_converters
-
 from plotly.graph_objects import Figure
-from plotly.graph_objects import Layout
 from plotly.graph_objects import Scatter
+from plotly.offline import plot
 
 if __name__ == '__main__':
     time_start = time()
@@ -26,23 +25,22 @@ if __name__ == '__main__':
     df.date = pd.to_datetime(df.date.astype(int), format=date_format, )
     logger.debug('data shape: {}'.format(df.shape))
     logger.debug('data types: {}'.format(df.dtypes))
-    plots = ['matplotlib', 'plotly']
-    plot = plots[1]
+    plot_methods = ['matplotlib', 'plotly']
+    plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
     # todo compute the forecast weight to be a best fit
     forecast_weight = 0.8
-    # todo introduce plotly as an alternative to matplotlib
     for target in ['positive', 'death']:
         once = True
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         target_df['change'] = target_df[target].pct_change()
-        if plot == plots[0]:
-            fig, ax = plt.subplots(figsize=(15, 10))
+        if plot_method == plot_methods[0]:
+            figure, ax = plt.subplots(figsize=(15, 10))
             # todo think about plotting y and log y in subplots
             ax.set_yscale('log')
         else:
-            fig = Figure()
+            figure = Figure()
             ax = None
 
         for window in range(1, 9):
@@ -56,28 +54,31 @@ if __name__ == '__main__':
                 for project in range(5):
                     if once:
                         once = False
-                        if plot == plots[0]:
+                        if plot_method == plot_methods[0]:
                             ax.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
-                        elif plot == plots[1]:
-                            fig.add_trace(
+                        elif plot_method == plot_methods[1]:
+                            figure.add_trace(
                                 Scatter(marker=dict(color=['gray']), mode='markers', name='forecast', showlegend=False,
                                         x=[forecast_date], y=[forecast], ))
                     else:
-                        if plot == plots[0]:
+                        if plot_method == plot_methods[0]:
                             ax.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
-                        elif plot == plots[1]:
-                            fig.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
-                                                  x=[forecast_date], y=[forecast], ))
+                        elif plot_method == plot_methods[1]:
+                            figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
+                                                     x=[forecast_date], y=[forecast], ))
                     forecast_date += timedelta(days=1, )
                     forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
-        if plot == plots[0]:
+        if plot_method == plot_methods[0]:
             ax.scatter(target_df['date'], target_df[target], label=target, c='blue', )
             ax.legend()
-            out_file = './' + target + '.png'
+            out_file = './{}.png'.format(target)
             plt.savefig(out_file)
-        elif plot == plots[1]:
-            fig.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
-                                  y=target_df[target], ))
-            fig.show()
+        elif plot_method == plot_methods[1]:
+            figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
+                                     y=target_df[target], ))
+            output_file = './{}.html'.format(target)
+            logger.info('saving HTML figure to {}'.format(output_file))
+            plot(auto_open=False, auto_play=False, figure_or_data=figure, filename=output_file,
+                 link_text='', output_type='file', show_link=False, validate=True, )
     logger.info('total time: {:5.2f}s'.format(time() - time_start))
