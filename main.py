@@ -55,10 +55,10 @@ if __name__ == '__main__':
             geodf['y'] = 10000 * geodf['case_cumsum'] / geodf['popData2018']
             geodf['death_cumsum'] = geodf['deaths'].cumsum()
             if plot == plots[0]:
-                geodf.plot(x='dateRep', y='y', ax=ax, style='.', label=geoId, )
+                geodf.plot(ax=ax, label=geoId, style='.', x='dateRep', y='y', )
             elif plot == plots[1]:
                 fig.add_trace(
-                    go.Scatter(x=geodf.dateRep, y=geodf.y, name=geoId.replace('_', ' '), )
+                    go.Scatter(mode='markers', name=geoId.replace('_', ' '), x=geodf.dateRep, y=geodf.y, )
                 )
 
     if plot == plots[0]:
