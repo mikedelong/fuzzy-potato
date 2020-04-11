@@ -59,16 +59,17 @@ if __name__ == '__main__':
                             axes.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
                         elif plot_method == plot_methods[1]:
                             for col in range(1, 3):
+                                # todo fix name/legend
                                 figure.add_trace(
                                     Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
-                                            showlegend=True, x=[forecast_date], y=[forecast], ), col=col, row=1,)
+                                            showlegend=True, x=[forecast_date], y=[forecast], ), col=col, row=1, )
                     else:
                         if plot_method == plot_methods[0]:
                             axes.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
                         elif plot_method == plot_methods[1]:
                             for col in range(1, 3):
                                 figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
-                                                         x=[forecast_date], y=[forecast], ), col=col, row=1,)
+                                                         x=[forecast_date], y=[forecast], ), col=col, row=1, )
                     forecast_date += timedelta(days=1, )
                     forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
@@ -79,8 +80,15 @@ if __name__ == '__main__':
             plt.savefig(out_file)
         elif plot_method == plot_methods[1]:
             for col in range(1, 3):
-                figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
-                                         y=target_df[target], ), col=col, row=1, )
+                if col == 1:
+                    # todo no name here
+                    figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', x=target_df['date'],
+                                             y=target_df[target], ), col=col, row=1, )
+                elif col == 2:
+                    figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target,
+                                             x=target_df['date'], y=target_df[target], ), col=col, row=1, )
+                else:
+                    raise ValueError('col mysteriously neither 1 nor 2')
             figure.update_yaxes(col=2, row=1, type='log')
             output_file = './{}.html'.format(target)
             logger.info('saving HTML figure to {}'.format(output_file))
