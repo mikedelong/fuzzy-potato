@@ -37,12 +37,12 @@ if __name__ == '__main__':
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         target_df['change'] = target_df[target].pct_change()
         if plot_method == plot_methods[0]:
-            figure, ax = plt.subplots(figsize=(15, 10))
-            # todo think about plotting y and log y in subplots
-            ax.set_yscale('log')
+            figure, axes = plt.subplots(figsize=(15, 10))
+            # todo think about plotting y and log y in subplots for matplotlib only
+            axes.set_yscale('log')
         else:
             figure = make_subplots(cols=2, rows=1)
-            ax = None
+            axes = None
 
         for window in range(1, 9):
             target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
@@ -56,7 +56,7 @@ if __name__ == '__main__':
                     if once:
                         once = False
                         if plot_method == plot_methods[0]:
-                            ax.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
+                            axes.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
                         elif plot_method == plot_methods[1]:
                             for col in range(1, 3):
                                 figure.add_trace(
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                                             showlegend=True, x=[forecast_date], y=[forecast], ), col=col, row=1,)
                     else:
                         if plot_method == plot_methods[0]:
-                            ax.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
+                            axes.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
                         elif plot_method == plot_methods[1]:
                             for col in range(1, 3):
                                 figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
@@ -73,8 +73,8 @@ if __name__ == '__main__':
                     forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
         if plot_method == plot_methods[0]:
-            ax.scatter(target_df['date'], target_df[target], label=target, c='blue', )
-            ax.legend()
+            axes.scatter(target_df['date'], target_df[target], label=target, c='blue', )
+            axes.legend()
             out_file = './{}.png'.format(target)
             plt.savefig(out_file)
         elif plot_method == plot_methods[1]:
