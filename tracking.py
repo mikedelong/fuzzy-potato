@@ -44,6 +44,7 @@ if __name__ == '__main__':
             figure = make_subplots(cols=2, rows=1)
             axes = None
 
+        # todo fix hovertext for plotly
         for window in range(1, 9):
             target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
             for index, row in target_df[window:].iterrows():
