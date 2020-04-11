@@ -47,8 +47,8 @@ if __name__ == '__main__':
             logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
             geodf['dateRep'] = pd.to_datetime(geodf['dateRep'])
             geodf = geodf[geodf['dateRep'] > '2020-03-01']
-            geodf.set_index(['dateRep', 'cases', 'deaths']).unstack(fill_value=0, ).stack().sort_index(
-                level=1, ).reset_index()
+            columns = ['dateRep', 'cases', 'deaths']
+            geodf.set_index(columns).unstack(fill_value=0, ).stack().sort_index(level=1, ).reset_index()
             geodf = geodf.sort_values(by=['dateRep'], axis=0, ascending=True)
             logger.info('id: {} shape: {}'.format(geoId, geodf.shape))
             geodf['case_cumsum'] = geodf['cases'].cumsum()
@@ -57,9 +57,7 @@ if __name__ == '__main__':
             if plot == plots[0]:
                 geodf.plot(ax=ax, label=geoId, style='.', x='dateRep', y='y', )
             elif plot == plots[1]:
-                fig.add_trace(
-                    go.Scatter(mode='markers', name=geoId.replace('_', ' '), x=geodf.dateRep, y=geodf.y, )
-                )
+                fig.add_trace(go.Scatter(mode='markers', name=geoId.replace('_', ' '), x=geodf.dateRep, y=geodf.y, ))
 
     if plot == plots[0]:
         plt.show()
