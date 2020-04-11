@@ -10,6 +10,7 @@ from pandas.plotting import register_matplotlib_converters
 from plotly.graph_objects import Figure
 from plotly.graph_objects import Scatter
 from plotly.offline import plot
+from plotly.subplots import make_subplots
 
 if __name__ == '__main__':
     time_start = time()
@@ -40,7 +41,8 @@ if __name__ == '__main__':
             # todo think about plotting y and log y in subplots
             ax.set_yscale('log')
         else:
-            figure = Figure()
+            # figure = Figure()
+            figure = make_subplots(cols=2, rows=1)
             ax = None
 
         for window in range(1, 9):
@@ -57,15 +59,17 @@ if __name__ == '__main__':
                         if plot_method == plot_methods[0]:
                             ax.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
                         elif plot_method == plot_methods[1]:
-                            figure.add_trace(
-                                Scatter(marker=dict(color=['gray']), mode='markers', name='forecast', showlegend=True,
-                                        x=[forecast_date], y=[forecast], ))
+                            for col in range(1, 3):
+                                figure.add_trace(
+                                    Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
+                                            showlegend=True, x=[forecast_date], y=[forecast], ), col=col, row=1,)
                     else:
                         if plot_method == plot_methods[0]:
                             ax.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
                         elif plot_method == plot_methods[1]:
-                            figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
-                                                     x=[forecast_date], y=[forecast], ))
+                            for col in range(1, 3):
+                                figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
+                                                         x=[forecast_date], y=[forecast], ), col=col, row=1,)
                     forecast_date += timedelta(days=1, )
                     forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
@@ -75,8 +79,9 @@ if __name__ == '__main__':
             out_file = './{}.png'.format(target)
             plt.savefig(out_file)
         elif plot_method == plot_methods[1]:
-            figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
-                                     y=target_df[target], ))
+            for col in range(1, 3):
+                figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
+                                         y=target_df[target], ), col=col, row=1, )
             output_file = './{}.html'.format(target)
             logger.info('saving HTML figure to {}'.format(output_file))
             plot(auto_open=False, auto_play=False, figure_or_data=figure, filename=output_file,
