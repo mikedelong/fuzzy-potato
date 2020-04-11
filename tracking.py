@@ -41,7 +41,6 @@ if __name__ == '__main__':
             # todo think about plotting y and log y in subplots
             ax.set_yscale('log')
         else:
-            # figure = Figure()
             figure = make_subplots(cols=2, rows=1)
             ax = None
 
@@ -82,6 +81,7 @@ if __name__ == '__main__':
             for col in range(1, 3):
                 figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target, x=target_df['date'],
                                          y=target_df[target], ), col=col, row=1, )
+            figure.update_yaxes(col=2, row=1, type='log')
             output_file = './{}.html'.format(target)
             logger.info('saving HTML figure to {}'.format(output_file))
             plot(auto_open=False, auto_play=False, figure_or_data=figure, filename=output_file,
