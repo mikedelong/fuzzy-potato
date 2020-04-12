@@ -29,7 +29,7 @@ if __name__ == '__main__':
     plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
     # todo compute the forecast weight to be a best fit
-    forecast_weight = 1.0
+    forecast_weight = 0.8
     for target in ['positive', 'death']:
         once = True
         logger.info('forecasting {}'.format(target))
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         for window in range(1, 9):
             column_to = 'projected_{}'.format(window)
             column_from = 'rolling_change_{}'.format(window)
-            target_df[column_to] = target_df[target].shift(periods=-1) * forecast_weight * target_df[column_from]
+            target_df[column_to] = target_df[target].shift(periods=-1) * forecast_weight * (1.0 + target_df[column_from])
 
         if once:
             once = False
