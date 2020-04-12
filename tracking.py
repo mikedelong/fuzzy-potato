@@ -7,7 +7,6 @@ from time import time
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas.plotting import register_matplotlib_converters
-from plotly.graph_objects import Figure
 from plotly.graph_objects import Scatter
 from plotly.offline import plot
 from plotly.subplots import make_subplots
@@ -35,6 +34,11 @@ if __name__ == '__main__':
         once = True
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
+        # append the projection rows with just dates
+        for project in range(5):
+            forecast_date = target_df['date'].max() + timedelta(days=1, )
+            target_df = target_df.append({'date': forecast_date}, ignore_index=True)
+
         target_df['change'] = target_df[target].pct_change()
         if plot_method == plot_methods[0]:
             figure, axes = plt.subplots(figsize=(15, 10))
