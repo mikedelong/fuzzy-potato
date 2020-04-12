@@ -45,6 +45,7 @@ if __name__ == '__main__':
             axes = None
 
         # todo fix hovertext for plotly
+        # todo roll up projected data into columns
         for window in range(1, 9):
             target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
             for index, row in target_df[window:].iterrows():
