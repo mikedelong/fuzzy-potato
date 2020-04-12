@@ -34,12 +34,12 @@ if __name__ == '__main__':
         once = True
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
+        target_df['change'] = target_df[target].pct_change()
         # append the projection rows with just dates
         for project in range(5):
             forecast_date = target_df['date'].max() + timedelta(days=1, )
             target_df = target_df.append({'date': forecast_date}, ignore_index=True)
 
-        target_df['change'] = target_df[target].pct_change()
         if plot_method == plot_methods[0]:
             figure, axes = plt.subplots(figsize=(15, 10))
             # todo think about plotting y and log y in subplots for matplotlib only
@@ -51,7 +51,9 @@ if __name__ == '__main__':
         # todo fix hovertext for plotly
         # todo roll up projected data into columns
         for window in range(1, 9):
-            target_df['rolling_change'] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
+            target_df['rolling_change_{}'.format(window)] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
+
+        for window in range(1, 9):
             for index, row in target_df[window:].iterrows():
                 forecast_format = 'date: {}  {}d rm forecast {:.0f} change {:.0f}'
                 forecast_date = (row['date'] + timedelta(days=1, )).date()
