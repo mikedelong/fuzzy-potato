@@ -54,32 +54,63 @@ if __name__ == '__main__':
             target_df['rolling_change_{}'.format(window)] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
 
         for window in range(1, 9):
-            for index, row in target_df[window:].iterrows():
-                forecast_format = 'date: {}  {}d rm forecast {:.0f} change {:.0f}'
-                forecast_date = (row['date'] + timedelta(days=1, )).date()
-                forecast = row[target] * (1.0 + forecast_weight * row['rolling_change'])
-                forecast_change = forecast - row[target]
-                logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
-                for project in range(5):
-                    if once:
-                        once = False
-                        if plot_method == plot_methods[0]:
-                            axes.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
-                        elif plot_method == plot_methods[1]:
-                            for col in range(1, 3):
-                                # todo fix name/legend
-                                figure.add_trace(
-                                    Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
-                                            showlegend=True, x=[forecast_date], y=[forecast], ), col=col, row=1, )
-                    else:
-                        if plot_method == plot_methods[0]:
-                            axes.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
-                        elif plot_method == plot_methods[1]:
-                            for col in range(1, 3):
-                                figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
-                                                         x=[forecast_date], y=[forecast], ), col=col, row=1, )
-                    forecast_date += timedelta(days=1, )
-                    forecast *= (1.0 + forecast_weight * row['rolling_change'])
+            target_df['projected_{}'.format(window)] = target_df[target] * forecast_weight * target_df['rolling_change_{}'.format(window)]
+
+        # axes.scatter(target_df['date'], target_df[target], label=target, c='blue', )
+
+        if once:
+            once = False
+            if plot_method == plot_methods[0]:
+                for window in range(1, 9):
+                    axes.scatter(target_df['date'], target_df['projected_{}'.format(window)],
+                                 c='gray', label='forecast', marker='x', )
+            elif plot_method == plot_methods[1]:
+                for col in range(1, 3):
+                    # todo fix name/legend
+                    for window in range(1, 9):
+                        figure.add_trace(
+                            Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
+                                    showlegend=True, x=target_df['date'], y=target_df['projected_{}'.format(window)],
+                                    ), col=col, row=1, )
+        else:
+            if plot_method == plot_methods[0]:
+                for window in range(1, 9):
+                    axes.scatter(target_df['date'], target_df['projected_{}'.format(window)],
+                                 c='gray',  marker='x', )
+            elif plot_method == plot_methods[1]:
+                for col in range(1, 3):
+                    for window in range(1, 9):
+                        figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
+                                                 x=target_df['date'], y=target_df['projected_{}'.format(window)],
+                                                 ), col=col, row=1, )
+
+        # for window in range(1, 9):
+        #     for index, row in target_df[window:].iterrows():
+        #         forecast_format = 'date: {}  {}d rm forecast {:.0f} change {:.0f}'
+        #         forecast_date = (row['date'] + timedelta(days=1, )).date()
+        #         forecast = row[target] * (1.0 + forecast_weight * row['rolling_change'])
+        #         forecast_change = forecast - row[target]
+        #         logger.info(forecast_format.format(forecast_date, window, forecast, forecast_change))
+        #         for project in range(5):
+        #             if once:
+        #                 once = False
+        #                 if plot_method == plot_methods[0]:
+        #                     axes.scatter([forecast_date], [forecast], c=colors[project], label='forecast', marker='x', )
+        #                 elif plot_method == plot_methods[1]:
+        #                     for col in range(1, 3):
+        #                         # todo fix name/legend
+        #                         figure.add_trace(
+        #                             Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
+        #                                     showlegend=True, x=[forecast_date], y=[forecast], ), col=col, row=1, )
+        #             else:
+        #                 if plot_method == plot_methods[0]:
+        #                     axes.scatter([forecast_date], [forecast], c=colors[project], marker='x', )
+        #                 elif plot_method == plot_methods[1]:
+        #                     for col in range(1, 3):
+        #                         figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
+        #                                                  x=[forecast_date], y=[forecast], ), col=col, row=1, )
+        #             forecast_date += timedelta(days=1, )
+        #             forecast *= (1.0 + forecast_weight * row['rolling_change'])
 
         if plot_method == plot_methods[0]:
             axes.scatter(target_df['date'], target_df[target], label=target, c='blue', )
