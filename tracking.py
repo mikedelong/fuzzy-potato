@@ -36,9 +36,9 @@ if __name__ == '__main__':
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         target_df['change'] = target_df[target].pct_change()
         # append the projection rows with just dates
-        for project in range(5):
-            forecast_date = target_df['date'].max() + timedelta(days=1, )
-            target_df = target_df.append({'date': forecast_date}, ignore_index=True)
+        # for project in range(5):
+        #     forecast_date = target_df['date'].max() + timedelta(days=1, )
+        #     target_df = target_df.append({'date': forecast_date}, ignore_index=True)
 
         if plot_method == plot_methods[0]:
             figure, axes = plt.subplots(figsize=(15, 10))
