@@ -29,7 +29,7 @@ if __name__ == '__main__':
     plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
     # todo compute the forecast weight to be a best fit
-    forecast_weight = 0.8
+    forecast_weight = 1.0
     for target in ['positive', 'death']:
         once = True
         logger.info('forecasting {}'.format(target))
@@ -58,8 +58,12 @@ if __name__ == '__main__':
             column_to = 'projected_{}'.format(window)
             column_from = 'rolling_change_{}'.format(window)
             target_df[column_to] = target_df[target].shift(periods=-1) * (
-                        1.0 + forecast_weight * target_df[column_from])
+                    1.0 + forecast_weight * target_df[column_from])
 
+        for window in range(1, 9):
+            column_to = 'projected_{}'.format(window)
+            target_df[column_to] = target_df[column_to].interpolate(axis=0, limit_direction='forward',
+                                                                    method='linear', )
         if once:
             once = False
             if plot_method == plot_methods[0]:
