@@ -78,7 +78,7 @@ if __name__ == '__main__':
                         column = 'projected_{}'.format(window)
                         figure.add_trace(
                             Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
-                                    showlegend=True, x=target_df['date'], y=target_df[column], ), col=col, row=1, )
+                                    showlegend=False, x=target_df['date'], y=target_df[column], ), col=col, row=1, )
         else:
             if plot_method == plot_methods[0]:
                 for window in range(1, 9):
