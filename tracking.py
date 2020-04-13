@@ -64,6 +64,7 @@ if __name__ == '__main__':
             column_to = 'projected_{}'.format(window)
             target_df[column_to] = target_df[column_to].interpolate(axis=0, limit_direction='forward',
                                                                     method='linear', )
+        # todo add forecast data one row at a time based on a mix of actual and forecast data
         if once:
             once = False
             if plot_method == plot_methods[0]:
