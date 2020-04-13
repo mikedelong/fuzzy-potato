@@ -57,7 +57,8 @@ if __name__ == '__main__':
         for window in range(1, 9):
             column_to = 'projected_{}'.format(window)
             column_from = 'rolling_change_{}'.format(window)
-            target_df[column_to] = target_df[target].shift(periods=-1) * forecast_weight * (1.0 + target_df[column_from])
+            target_df[column_to] = target_df[target].shift(periods=-1) * (
+                        1.0 + forecast_weight * target_df[column_from])
 
         if once:
             once = False
