@@ -11,6 +11,8 @@ from plotly.graph_objects import Scatter
 from plotly.offline import plot
 from plotly.subplots import make_subplots
 
+import numpy as np
+
 if __name__ == '__main__':
     time_start = time()
     logger = getLogger(__name__)
@@ -35,10 +37,6 @@ if __name__ == '__main__':
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
         target_df['change'] = target_df[target].pct_change()
-        # append the projection rows with just dates
-        # for project in range(5):
-        #     forecast_date = target_df['date'].max() + timedelta(days=1, )
-        #     target_df = target_df.append({'date': forecast_date}, ignore_index=True)
 
         if plot_method == plot_methods[0]:
             figure, axes = plt.subplots(figsize=(15, 10))
@@ -61,6 +59,18 @@ if __name__ == '__main__':
                     1.0 + forecast_weight * target_df[column_from])
 
         # todo add forecast data one row at a time based on a mix of actual and forecast data
+        # append the projection rows with just dates
+        for project in range(5):
+            new_row = {
+                'date': target_df['date'].max() + timedelta(days=1, ),
+            }
+            for window in range(1, 9):
+                column = 'rolling_change_{}'.format(window)
+                values = target_df['change'].values[-window-1:-1]
+                new_row[column] = np.array(values).mean()
+
+            target_df = target_df.append(new_row, ignore_index=True)
+
         if once:
             once = False
             if plot_method == plot_methods[0]:
