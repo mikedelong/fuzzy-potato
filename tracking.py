@@ -60,10 +60,6 @@ if __name__ == '__main__':
             target_df[column_to] = target_df[target].shift(periods=-1) * (
                     1.0 + forecast_weight * target_df[column_from])
 
-        for window in range(1, 9):
-            column_to = 'projected_{}'.format(window)
-            target_df[column_to] = target_df[column_to].interpolate(axis=0, limit_direction='forward',
-                                                                    method='linear', )
         # todo add forecast data one row at a time based on a mix of actual and forecast data
         if once:
             once = False
@@ -100,10 +96,12 @@ if __name__ == '__main__':
             for col in range(1, 3):
                 if col == 1:
                     # todo no name here
-                    figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', x=target_df['date'],
+                    figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers',
+                                             showlegend=True, x=target_df['date'],
                                              y=target_df[target], ), col=col, row=1, )
                 elif col == 2:
                     figure.add_trace(Scatter(marker=dict(color=['blue']), mode='markers', name=target,
+                                             showlegend=True,
                                              x=target_df['date'], y=target_df[target], ), col=col, row=1, )
                 else:
                     raise ValueError('col mysteriously neither 1 nor 2')
