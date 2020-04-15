@@ -30,7 +30,7 @@ if __name__ == '__main__':
     plot_methods = ['matplotlib', 'plotly']
     plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
-    window_count = 8
+    window_count = 3
     # todo compute the forecast weight to be a best fit
     forecast_weight = 1.0
     for target in ['positive', 'death']:
@@ -49,11 +49,11 @@ if __name__ == '__main__':
 
         # todo fix hovertext for plotly
         # todo roll up projected data into columns
-        for window in range(1, window_count+1):
+        for window in range(1, window_count + 1):
             column = 'rolling_change_{}'.format(window)
             target_df[column] = target_df['change'].rolling(window=window, min_periods=window, ).mean()
 
-        for window in range(1, window_count+1):
+        for window in range(1, window_count + 1):
             column_to = 'projected_{}'.format(window)
             column_from = 'rolling_change_{}'.format(window)
             target_df[column_to] = target_df[target].shift(periods=-1) * (
@@ -62,41 +62,39 @@ if __name__ == '__main__':
         # todo add forecast data one row at a time based on a mix of actual and forecast data
         # append the projection rows with just dates
         for project in range(5):
-            new_row = {
-                'date': target_df['date'].max() + timedelta(days=1, ),
-            }
-            for window in range(1, window_count+1):
+            new_row = {'date': target_df['date'].max() + timedelta(days=1, ), }
+            for window in range(1, window_count + 1):
                 column = 'rolling_change_{}'.format(window)
-                values = target_df['change'].values[-window-1:-1]
+                values = target_df['change'].values[-window - 1:-1]
                 new_row[column] = np.array(values).mean()
 
             target_df = target_df.append(new_row, ignore_index=True)
 
-        columns = ['date'] + ['rolling_change_{}'.format(window) for window in range(1, window_count+1)]
+        columns = ['date'] + ['rolling_change_{}'.format(window) for window in range(1, window_count + 1)]
         logger.info('\n{}'.format(target_df[columns].tail(6)))
 
         if once:
             once = False
             if plot_method == plot_methods[0]:
-                for window in range(1, window_count+1):
+                for window in range(1, window_count + 1):
                     column = 'projected_{}'.format(window)
                     axes.scatter(target_df['date'], target_df[column], c='gray', label='forecast', marker='x', )
             elif plot_method == plot_methods[1]:
                 for col in range(1, 3):
                     # todo fix name/legend
-                    for window in range(1, window_count+1):
+                    for window in range(1, window_count + 1):
                         column = 'projected_{}'.format(window)
                         figure.add_trace(
                             Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
                                     showlegend=False, x=target_df['date'], y=target_df[column], ), col=col, row=1, )
         else:
             if plot_method == plot_methods[0]:
-                for window in range(1, window_count+1):
+                for window in range(1, window_count + 1):
                     column = 'projected_{}'.format(window)
                     axes.scatter(target_df['date'], target_df[column], c='gray', marker='x', )
             elif plot_method == plot_methods[1]:
                 for col in range(1, 3):
-                    for window in range(1, window_count+1):
+                    for window in range(1, window_count + 1):
                         figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
                                                  x=target_df['date'], y=target_df['projected_{}'.format(window)],
                                                  ), col=col, row=1, )
