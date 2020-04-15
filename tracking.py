@@ -30,7 +30,7 @@ if __name__ == '__main__':
     plot_methods = ['matplotlib', 'plotly']
     plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
-    window_count = 3
+    window_count = 8
     # todo compute the forecast weight to be a best fit
     forecast_weight = 1.0
     for target in ['positive', 'death']:
