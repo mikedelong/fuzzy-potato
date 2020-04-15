@@ -65,7 +65,7 @@ if __name__ == '__main__':
             new_row = {'date': target_df['date'].max() + timedelta(days=1, ), }
             for window in range(1, window_count + 1):
                 column = 'rolling_change_{}'.format(window)
-                values = target_df['change'].values[-window - 1:-1]
+                values = target_df[column].values[-window - 1:-1]
                 new_row[column] = np.array(values).mean()
 
             target_df = target_df.append(new_row, ignore_index=True)
