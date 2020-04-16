@@ -61,12 +61,15 @@ if __name__ == '__main__':
 
         # todo add forecast data one row at a time based on a mix of actual and forecast data
         # append the projection rows with just dates
+        base_target_value = target_df[target_df['date'] == target_df['date'].max()][target][0]
         for project in range(5):
             new_row = {'date': target_df['date'].max() + timedelta(days=1, ), }
             for window in range(1, window_count + 1):
                 column = 'rolling_change_{}'.format(window)
+                column_to = 'projected_{}'.format(window)
                 values = target_df[column].values[-window - 1:-1]
                 new_row[column] = np.array(values).mean()
+                new_row[column_to] = new_row[column] * (1.0 + base_target_value)
 
             target_df = target_df.append(new_row, ignore_index=True)
 
