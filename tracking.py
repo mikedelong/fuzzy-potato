@@ -30,7 +30,7 @@ if __name__ == '__main__':
     plot_methods = ['matplotlib', 'plotly']
     plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
-    window_count = 8
+    window_count = 2
     # todo compute the forecast weight to be a best fit
     forecast_weight = 1.0
     for target in ['positive', 'death']:
@@ -61,6 +61,7 @@ if __name__ == '__main__':
 
         # todo add forecast data one row at a time based on a mix of actual and forecast data
         # append the projection rows with just dates
+        # todo patch up the rolling change and projected values for 'today'
         base_target_value = target_df[target_df['date'] == target_df['date'].max()][target][0]
         for project in range(5):
             new_row = {'date': target_df['date'].max() + timedelta(days=1, ), }
