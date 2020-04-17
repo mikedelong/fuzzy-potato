@@ -69,7 +69,7 @@ if __name__ == '__main__':
                 column_to = 'projected_{}'.format(window)
                 values = target_df[column].values[-window - 1:-1]
                 new_row[column] = np.array(values).mean()
-                new_row[column_to] = new_row[column] * (1.0 + base_target_value)
+                new_row[column_to] = base_target_value * (1.0 + new_row[column])
 
             target_df = target_df.append(new_row, ignore_index=True)
 
