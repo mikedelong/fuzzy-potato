@@ -56,8 +56,7 @@ if __name__ == '__main__':
         for window in range(1, window_count + 1):
             column_to = 'projected_{}'.format(window)
             column_from = 'rolling_change_{}'.format(window)
-            target_df[column_to] = target_df[target].shift(periods=-1) * (
-                    1.0 + forecast_weight * target_df[column_from])
+            target_df[column_to] = target_df[target].shift(periods=1) * (1.0 + forecast_weight * target_df[column_from])
 
         # todo add forecast data one row at a time based on a mix of actual and forecast data
         # append the projection rows with just dates
