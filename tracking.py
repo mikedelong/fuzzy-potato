@@ -91,8 +91,9 @@ if __name__ == '__main__':
                     for window in range(1, window_count + 1):
                         column = 'projected_{}'.format(window)
                         figure.add_trace(
-                            Scatter(marker=dict(color=['gray']), mode='markers', name='forecast',
-                                    showlegend=False, x=target_df['date'], y=target_df[column], ), col=col, row=1, )
+                            Scatter(marker=dict(color='Gray'), marker_symbol='x', mode='markers',
+                                    name='forecast', showlegend=False, x=target_df['date'], y=target_df[column], ),
+                            col=col, row=1, )
         else:
             if plot_method == plot_methods[0]:
                 for window in range(1, window_count + 1):
@@ -101,9 +102,9 @@ if __name__ == '__main__':
             elif plot_method == plot_methods[1]:
                 for col in range(1, 3):
                     for window in range(1, window_count + 1):
-                        figure.add_trace(Scatter(marker=dict(color=['gray']), mode='markers', showlegend=False,
-                                                 x=target_df['date'], y=target_df['projected_{}'.format(window)],
-                                                 ), col=col, row=1, )
+                        figure.add_trace(Scatter(marker=dict(color='Gray'), marker_symbol='x', mode='markers',
+                                                 showlegend=False, x=target_df['date'],
+                                                 y=target_df['projected_{}'.format(window)], ), col=col, row=1, )
 
         if plot_method == plot_methods[0]:
             axes.scatter(target_df['date'], target_df[target], label=target, c='blue', )
