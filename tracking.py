@@ -58,9 +58,6 @@ if __name__ == '__main__':
             column_from = 'rolling_change_{}'.format(window)
             target_df[column_to] = target_df[target].shift(periods=1) * (1.0 + forecast_weight * target_df[column_from])
 
-        # todo add forecast data one row at a time based on a mix of actual and forecast data
-        # append the projection rows with just dates
-        # todo patch up the rolling change and projected values for 'today'
         for project in range(5):
             new_row = {'date': target_df['date'].max() + timedelta(days=1, ), }
             for window in range(1, window_count + 1):
