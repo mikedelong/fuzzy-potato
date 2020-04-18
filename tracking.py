@@ -111,11 +111,11 @@ if __name__ == '__main__':
             for col in range(1, 3):
                 if col == 1:
                     # todo no name here
-                    figure.add_trace(Scatter(marker=dict(color='Blue'), mode='markers',
+                    figure.add_trace(Scatter(marker=dict(color='Blue'), mode='markers', name=target,
                                              showlegend=True, x=target_df['date'],
                                              y=target_df[target], ), col=col, row=1, )
                 elif col == 2:
-                    figure.add_trace(Scatter(marker=dict(color='Blue'), mode='markers', name=target,
+                    figure.add_trace(Scatter(marker=dict(color='Blue'), mode='markers', name='log({})'.format(target),
                                              showlegend=True,
                                              x=target_df['date'], y=target_df[target], ), col=col, row=1, )
                 else:
