@@ -73,8 +73,8 @@ if __name__ == '__main__':
             target_df = target_df.append(new_row, ignore_index=True)
             logger.info(new_row['date'])
 
-        columns = ['date'] + ['rolling_change_{}'.format(window) for window in range(1, window_count + 1)]
-        logger.info('\n{}'.format(target_df[columns].tail(6)))
+        logger.info('\n{}'.format(target_df[['date'] + ['rolling_change_{}'.format(window)
+                                                        for window in range(1, window_count + 1)]].tail(6)))
 
         if once:
             once = False
