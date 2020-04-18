@@ -33,7 +33,7 @@ if __name__ == '__main__':
     window_count = 5
     # todo compute the forecast weight to be a best fit
     forecast_weight = 1.0
-    for target in ['positive', 'death']:
+    for target in ['death', 'negative', 'pending', 'positive', 'recovered', 'total', 'totalTestResults', ]:
         once = True
         logger.info('forecasting {}'.format(target))
         target_df = df[['date', target]].copy(deep=True).sort_values(by='date')
