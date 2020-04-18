@@ -30,7 +30,7 @@ if __name__ == '__main__':
     plot_methods = ['matplotlib', 'plotly']
     plot_method = plot_methods[1]
     colors = ['dimgray', 'gray', 'darkgray', 'silver', 'lightgray']
-    window_count = 5
+    window_count = 8
     # todo compute the forecast weight to be a best fit
     forecast_weight = 1.0
     for target in ['death', 'negative', 'pending', 'positive', 'recovered', 'total', 'totalTestResults', ]:
@@ -71,6 +71,7 @@ if __name__ == '__main__':
                 new_row[column_to] = base_target_value * (1.0 + new_row[column])
 
             target_df = target_df.append(new_row, ignore_index=True)
+            logger.info(new_row['date'])
 
         columns = ['date'] + ['rolling_change_{}'.format(window) for window in range(1, window_count + 1)]
         logger.info('\n{}'.format(target_df[columns].tail(6)))
