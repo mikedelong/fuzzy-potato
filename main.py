@@ -54,10 +54,11 @@ if __name__ == '__main__':
             geodf['case_cumsum'] = geodf['cases'].cumsum()
             geodf['y'] = 10000 * geodf['case_cumsum'] / geodf['popData2018']
             geodf['death_cumsum'] = geodf['deaths'].cumsum()
+            geodf['days'] = geodf['dateRep'].apply(lambda x: (x.to_pydatetime() - geodf['dateRep'].min()).days)
             if plot == plots[0]:
                 geodf.plot(ax=ax, label=geoId, style='.', x='dateRep', y='y', )
             elif plot == plots[1]:
-                fig.add_trace(go.Scatter(mode='markers', name=geoId.replace('_', ' '), x=geodf.dateRep, y=geodf.y, ))
+                fig.add_trace(go.Scatter(mode='markers', name=geoId.replace('_', ' '), x=geodf.days, y=geodf.y, ))
 
     if plot == plots[0]:
         plt.show()
