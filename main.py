@@ -54,7 +54,7 @@ if __name__ == '__main__':
             geodf['case_cumsum'] = geodf['cases'].cumsum()
             geodf['y'] = 10000 * geodf['case_cumsum'] / geodf['popData2018']
             geodf['death_cumsum'] = geodf['deaths'].cumsum()
-            geodf = geodf[geodf['death_cumsum'] >= 50]
+            geodf = geodf[geodf['death_cumsum'] >= 10]
             geodf['days'] = geodf['dateRep'].apply(lambda x: (x.to_pydatetime() - geodf['dateRep'].min()).days)
             if plot == plots[0]:
                 geodf.plot(ax=ax, label=geoId, style='.', x='dateRep', y='y', )
