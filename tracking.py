@@ -5,13 +5,12 @@ from logging import getLogger
 from time import time
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from pandas.plotting import register_matplotlib_converters
 from plotly.graph_objects import Scatter
 from plotly.offline import plot
 from plotly.subplots import make_subplots
-
-import numpy as np
 
 if __name__ == '__main__':
     time_start = time()
